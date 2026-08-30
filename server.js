@@ -32,7 +32,7 @@ const shield = createShield({
   block: {
     enabled: true,
     threshold: 75,
-    durationMs: 5 * 60 * 1000
+    durationMs: 24 * 60 * 60 * 1000
   },
   alert: {
     enabled: true,
