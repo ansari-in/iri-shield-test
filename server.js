@@ -256,7 +256,7 @@ async function replayDataset() {
 
 app.listen(port, () => {
   console.log(`\n🛡️  iri-test running on http://localhost:${port}`);
-  console.log(`📊 Dashboard: http://localhost:${port}/iri-shield`);
+  console.log(` Dashboard: http://localhost:${port}/iri-shield`);
   console.log(`   Credentials: admin / admin`);
   console.log(`   Storage: ${process.env.IRI_STORAGE_MODE || 'sqlite'}`);
   console.log(`   Security mode: medium`);
