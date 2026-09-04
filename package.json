@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "iri-shield": "1.2.2"
+    "iri-shield": "file:../iri-shield"
   }
 }
