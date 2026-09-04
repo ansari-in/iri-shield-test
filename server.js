@@ -9,6 +9,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 const jwtSecret = process.env.JWT_SECRET || 'iri-test-dev-secret';
 const apiKey = process.env.API_KEY || 'iri-demo-key';
+const isVercel = Boolean(process.env.VERCEL);
+const storageMode = process.env.IRI_STORAGE_MODE || (isVercel ? 'memory' : 'sqlite');
+const sqliteFile = process.env.IRI_SQLITE_FILE || (isVercel ? '/tmp/iri-shield.sqlite' : './data/iri-shield.sqlite');
+const mongoUrl = process.env.IRI_MONGO_URL;
 
 app.use(express.json({ limit: '200kb' }));
 
@@ -21,8 +25,9 @@ const shield = createShield({
   security: 'medium',       // 'low' | 'medium' | 'high'
   cors: true,
   storage: {
-    mode: process.env.IRI_STORAGE_MODE || 'sqlite',
-    sqliteFile: process.env.IRI_SQLITE_FILE || './data/iri-shield.sqlite'
+    mode: storageMode,
+    sqliteFile,
+    mongoUrl
   },
   rateLimit: {
     enabled: true,
@@ -258,7 +263,7 @@ app.listen(port, () => {
   console.log(`\n🛡️  iri-test running on http://localhost:${port}`);
   console.log(` Dashboard: http://localhost:${port}/iri-shield`);
   console.log(`   Credentials: admin / admin`);
-  console.log(`   Storage: ${process.env.IRI_STORAGE_MODE || 'sqlite'}`);
+  console.log(`   Storage: ${storageMode}${storageMode === 'sqlite' ? ` (${sqliteFile})` : ''}`);
   console.log(`   Security mode: medium`);
   console.log(`   Testing mode: ON (IP overrides via headers enabled)\n`);
 });
