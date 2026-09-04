@@ -3,3 +3,8 @@ coverage/
 .env
 *.log
 data/*.jsonl
+pnpm-debug.log
+pnpm*
+package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
