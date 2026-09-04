@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 const jwtSecret = process.env.JWT_SECRET || 'iri-test-dev-secret';
 const apiKey = process.env.API_KEY || 'iri-demo-key';
 const isVercel = Boolean(process.env.VERCEL);
-const storageMode = process.env.IRI_STORAGE_MODE || (isVercel ? 'memory' : 'sqlite');
+const storageMode = process.env.IRI_STORAGE_MODE || 'sqlite';
 const sqliteFile = process.env.IRI_SQLITE_FILE || (isVercel ? '/tmp/iri-shield.sqlite' : './data/iri-shield.sqlite');
 const mongoUrl = process.env.IRI_MONGO_URL;
 

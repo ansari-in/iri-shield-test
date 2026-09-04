@@ -22,13 +22,13 @@ This demo is ready to deploy on Vercel.
 Vercel Functions run on a read-only filesystem. Because of that, the demo uses:
 
 - `sqlite` locally, stored at `./data/iri-shield.sqlite`
-- `memory` automatically on Vercel, so the app boots without trying to create `./data`
+- `sqlite` automatically on Vercel, stored at `/tmp/iri-shield.sqlite`
 
 The important part is in `server.js`:
 
 ```js
 const isVercel = Boolean(process.env.VERCEL);
-const storageMode = process.env.IRI_STORAGE_MODE || (isVercel ? 'memory' : 'sqlite');
+const storageMode = process.env.IRI_STORAGE_MODE || 'sqlite';
 const sqliteFile = process.env.IRI_SQLITE_FILE || (isVercel ? '/tmp/iri-shield.sqlite' : './data/iri-shield.sqlite');
 
 const shield = createShield({
@@ -53,10 +53,13 @@ API_KEY=replace-with-your-demo-api-key
 Optional storage variables:
 
 ```bash
-# Default on Vercel. Data resets when the function instance is recycled.
+# Default. Uses /tmp on Vercel and ./data locally.
+IRI_STORAGE_MODE=sqlite
+
+# Memory mode. Data resets when the function instance is recycled.
 IRI_STORAGE_MODE=memory
 
-# Temporary SQLite only. Works because /tmp is writable, but data is not permanent.
+# Explicit temporary SQLite path for Vercel.
 IRI_STORAGE_MODE=sqlite
 IRI_SQLITE_FILE=/tmp/iri-shield.sqlite
 
@@ -65,7 +68,7 @@ IRI_STORAGE_MODE=mongodb
 IRI_MONGO_URL=mongodb+srv://...
 ```
 
-Use `memory` for quick Vercel checks. Use MongoDB or another external datastore for production persistence; `/tmp` SQLite is only scratch storage.
+Use default SQLite for quick Vercel checks. Use MongoDB or another external datastore for production persistence; `/tmp` SQLite is only scratch storage and can reset when the function instance is recycled.
 
 ## Modes: Testing vs Real-World Usage
 
