@@ -10,9 +10,16 @@ const port = process.env.PORT || 3000;
 const jwtSecret = process.env.JWT_SECRET || 'iri-test-dev-secret';
 const apiKey = process.env.API_KEY || 'iri-example-key';
 const isVercel = Boolean(process.env.VERCEL);
-const storageMode = process.env.IRI_STORAGE_MODE || 'sqlite';
-const sqliteFile = process.env.IRI_SQLITE_FILE || (isVercel ? '/tmp/iri-shield.sqlite' : './data/iri-shield.sqlite');
 const mongoUrl = process.env.IRI_MONGO_URL;
+const storageMode = process.env.IRI_STORAGE_MODE || (isVercel && mongoUrl ? 'mongodb' : 'sqlite');
+const sqliteFile = process.env.IRI_SQLITE_FILE || (isVercel ? '/tmp/iri-shield.sqlite' : './data/iri-shield.sqlite');
+const dashboardUser = process.env.SHIELD_ADMIN_USER || 'admin';
+const dashboardPassword = process.env.SHIELD_ADMIN_PASSWORD || 'admin';
+const dashboardSessionSecret = process.env.IRI_SHIELD_DASHBOARD_SECRET || process.env.SESSION_SECRET || jwtSecret;
+
+if (isVercel) {
+  app.set('trust proxy', true);
+}
 
 app.use(express.json({ limit: '200kb' }));
 
@@ -48,8 +55,9 @@ const shield = createShield({
     allowClientOverrides: true
   },
   dashboard: {
-    username: 'admin',
-    password: 'admin',
+    username: dashboardUser,
+    password: dashboardPassword,
+    sessionSecret: dashboardSessionSecret,
     refreshMs: 30 * 1000     // refresh every 30s in dev
   },
   anomaly: {
@@ -168,12 +176,12 @@ app.get('/config', (req, res) => {
 // Monitoring
 // ---------------------------------------------------------------------------
 
-app.get('/api/stats', adminApiAuth, (req, res) => {
-  res.json(shield.getStats());
+app.get('/api/stats', adminApiAuth, async (req, res) => {
+  res.json(await shield.getStats());
 });
 
-app.get('/metrics', adminApiAuth, (req, res) => {
-  res.json(shield.getStats());
+app.get('/metrics', adminApiAuth, async (req, res) => {
+  res.json(await shield.getStats());
 });
 
 // ---------------------------------------------------------------------------
@@ -350,7 +358,7 @@ function renderHome(req) {
       <div class="status">
         <div class="card"><p class="label">Package</p><p class="value">iri-shield</p></div>
         <div class="card"><p class="label">Author</p><p class="value">ansari-in</p></div>
-        <div class="card"><p class="label">Dashboard</p><p class="value">admin/admin</p></div>
+        <div class="card"><p class="label">Dashboard</p><p class="value">${escapeHtml(dashboardUser)}/configured password</p></div>
         <div class="card"><p class="label">Storage</p><p class="value">${escapeHtml(storageMode)}</p></div>
       </div>
     </section>
@@ -420,11 +428,15 @@ function escapeHtml(value) {
 // Start
 // ---------------------------------------------------------------------------
 
-app.listen(port, () => {
+if (require.main === module) {
+  app.listen(port, () => {
   console.log(`\n🛡️  iri-test running on http://localhost:${port}`);
   console.log(` Dashboard: http://localhost:${port}/iri-shield`);
-  console.log(`   Credentials: admin / admin`);
+  console.log(`   Credentials: ${dashboardUser} / ${dashboardPassword === 'admin' ? 'admin' : '[configured]'}`);
   console.log(`   Storage: ${storageMode}${storageMode === 'sqlite' ? ` (${sqliteFile})` : ''}`);
   console.log(`   Security mode: medium`);
   console.log(`   Testing mode: ON (IP overrides via headers enabled)\n`);
-});
+  });
+}
+
+module.exports = app;

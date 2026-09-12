@@ -19,22 +19,40 @@ Open:
 
 This demo is ready to deploy on Vercel.
 
-Vercel Functions run on a read-only filesystem. Because of that, the demo uses:
+This demo depends on the sibling package with:
+
+```json
+"iri-shield": "file:../iri-shield"
+```
+
+Deploy from a repository that contains both `iri-test` and `iri-shield` so Vercel can resolve that local package. If you deploy only the `iri-test` folder by itself, publish the patched `iri-shield` package first and replace the dependency with that npm version.
+
+Vercel Functions run on a read-only filesystem, and `/tmp` is temporary per function instance. Because of that, the demo uses:
 
 - `sqlite` locally, stored at `./data/iri-shield.sqlite`
-- `sqlite` automatically on Vercel, stored at `/tmp/iri-shield.sqlite`
+- `mongodb` automatically on Vercel when `IRI_MONGO_URL` is configured
+- `sqlite` on Vercel only as a short-lived fallback, stored at `/tmp/iri-shield.sqlite`
+
+Use MongoDB or another external datastore for persistent dashboard history on Vercel. SQLite in `/tmp` can disappear when Vercel recycles or moves the function instance, so old dashboard events, alerts, clients, and blocks should not be expected to survive there.
 
 The important part is in `server.js`:
 
 ```js
 const isVercel = Boolean(process.env.VERCEL);
-const storageMode = process.env.IRI_STORAGE_MODE || 'sqlite';
+const mongoUrl = process.env.IRI_MONGO_URL;
+const storageMode = process.env.IRI_STORAGE_MODE || (isVercel && mongoUrl ? 'mongodb' : 'sqlite');
 const sqliteFile = process.env.IRI_SQLITE_FILE || (isVercel ? '/tmp/iri-shield.sqlite' : './data/iri-shield.sqlite');
 
 const shield = createShield({
   storage: {
     mode: storageMode,
-    sqliteFile
+    sqliteFile,
+    mongoUrl
+  },
+  dashboard: {
+    username: process.env.SHIELD_ADMIN_USER || 'admin',
+    password: process.env.SHIELD_ADMIN_PASSWORD || 'admin',
+    sessionSecret: process.env.IRI_SHIELD_DASHBOARD_SECRET || process.env.SESSION_SECRET || process.env.JWT_SECRET
   }
 });
 ```
@@ -48,12 +66,15 @@ Recommended production/demo variables:
 ```bash
 JWT_SECRET=replace-with-a-long-random-secret
 API_KEY=replace-with-your-demo-api-key
+SHIELD_ADMIN_USER=admin
+SHIELD_ADMIN_PASSWORD=replace-with-a-strong-password
+IRI_SHIELD_DASHBOARD_SECRET=replace-with-a-long-random-session-secret
 ```
 
 Optional storage variables:
 
 ```bash
-# Default. Uses /tmp on Vercel and ./data locally.
+# Local/default fallback. Uses /tmp on Vercel and ./data locally.
 IRI_STORAGE_MODE=sqlite
 
 # Memory mode. Data resets when the function instance is recycled.
@@ -68,7 +89,9 @@ IRI_STORAGE_MODE=mongodb
 IRI_MONGO_URL=mongodb+srv://...
 ```
 
-Use default SQLite for quick Vercel checks. Use MongoDB or another external datastore for production persistence; `/tmp` SQLite is only scratch storage and can reset when the function instance is recycled.
+For Vercel dashboard persistence, set `IRI_STORAGE_MODE=mongodb` and `IRI_MONGO_URL`. If `IRI_MONGO_URL` is present and `IRI_STORAGE_MODE` is omitted, this demo now selects MongoDB automatically on Vercel.
+
+The dashboard session cookie is stable across Vercel cold starts when `IRI_SHIELD_DASHBOARD_SECRET`/`SESSION_SECRET`/`JWT_SECRET` is configured. Without a stable session secret in older `iri-shield` versions, a random per-instance dashboard token could produce intermittent `401 Unauthorized` API responses while clicking tabs.
 
 ## Modes: Testing vs Real-World Usage
 
