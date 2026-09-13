@@ -304,7 +304,7 @@ function renderHome(req) {
             ink: '#111827',
             paper: '#fbfbf8',
             line: '#e5e7eb',
-            cobalt: '#1d4ed8',
+            cobalt: '#d81d87',
             ember: '#b45309',
             pine: '#047857',
             rose: '#be123c'
@@ -341,7 +341,7 @@ function renderHome(req) {
     <section class="border-b border-line bg-white">
       <div class="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl grid-cols-1 gap-10 px-5 py-16 md:grid-cols-[1.05fr_0.95fr] md:items-center">
       <div>
-          <p class="mb-5 inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-cobalt">Express.js middleware - research project</p>
+          <!-- <p class="mb-5 inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-cobalt">Express.js middleware - research project</p> -->
           <h1 class="font-Hero mb-6 text-5xl font-extrabold leading-[0.96] tracking-normal text-slate-950 md:text-7xl" style="background: linear-gradient(90deg,#ff66c4,#ffc259); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">iri-shield</h1>
           <h1 class="font-display mb-6 text-xl font-bold leading-[0.96] tracking-normal text-slate-950">Practical API threat detection inside Node.js.</h1>
           <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Iri-Shield combines request hardening, multi-signal identity continuity, static attack rules, behavioral anomaly scoring, attack sequence correlation, automated mitigation, and recursive PII redaction in one Express.js middleware.</p>
@@ -454,9 +454,24 @@ function renderHome(req) {
     </div>
 </article>
         
-          ${mediaCard('Figure A', 'Overall system architecture', 'Create a clean architecture diagram showing Client/API Request -> Express app -> Iri-Shield middleware -> protected route -> response redaction -> dashboard/storage. Include Storage Abstraction branching to Memory, SQLite, and MongoDB. Use blue for trusted app flow, amber for suspicious signals, and red for mitigation.')}
-          ${mediaCard('Figure B', 'Seven-layer request flow', 'Create a horizontal or vertical flowchart for the seven layers: hardening, identity, static rules, behavior, sequence correlation, risk/mitigation, redaction. Show risk score accumulating across stages.')}
+
+
           ${mediaCard('Figure C', 'Attack sequence correlation', 'Create a timeline showing failed authentication, endpoint enumeration, SQL injection, secret probe, and block decision from the same client. Use timestamps and small request cards.')}
+
+
+<article class="rounded-lg border border-dashed border-slate-300 bg-white p-5 shadow-sm">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.14em] text-cobalt">Figure D</p>
+        <h3 class="mt-2 text-xl font-extrabold text-slate-950">Dashboard overview</h3>
+      </div>
+      <span class="rounded bg-slate-100 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">placeholder</span>
+    </div>
+    <div class="mt-5 grid min-h-44 place-items-center rounded-md border border-slate-200 bg-slate-50 p-1 text-center">
+      <img src="/media/dashboard-overview.png" alt="Dashboard overview screenshot" class="max-h-94 object-fit" />
+    </div>
+</article>
+
           ${mediaCard('Figure D', 'Dashboard overview screenshot', 'Capture the real dashboard after replaying the dataset. Show stat cards, threat distribution, alerts, blocked IPs, and event detail breakdown. Prefer a crisp browser screenshot at 1440px wide.')}
           ${mediaCard('Video 1', 'End-to-end demo teaser', 'A 30-45 second video: start from home page, open dashboard, send safe request, send SQL injection request, show alert/event creation, show blocked IP and explainable score, then show redacted sensitive API response.')}
           ${mediaCard('Video 2', 'Research evaluation walkthrough', 'A narrated screen recording explaining the benchmark dataset, category-wise detection chart, false-positive result, identity-drift test, redaction test, and Vercel/MongoDB persistence setup.')}
@@ -540,7 +555,7 @@ curl ${escapeHtml(origin)}/api/stats \\
           <p class="text-sm font-bold text-slate-900">Useful links</p>
           <div class="mt-4 grid gap-2 text-sm font-semibold text-cobalt">
             <a href="/iri-shield">Dashboard</a>
-            <a href="https://iri-shield.vercel.app/">Live docs/site</a>
+            <a href="https://www.npmjs.com/package/iri-shield">Live docs</a>
             <a href="https://github.com/ansari-in/iri-shield#readme">Package README</a>
             <a href="https://www.npmjs.com/package/iri-shield">NPM package</a>
           </div>
