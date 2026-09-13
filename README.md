@@ -11,9 +11,24 @@ npm start
 
 Open:
 
-- API root: `http://localhost:3000/`
+- Research home page: `http://localhost:3000/`
 - Dashboard: `http://localhost:3000/iri-shield`
 - Dashboard login: `admin` / `admin`
+- Media generation brief: `http://localhost:3000/Generate_Media.md`
+
+## Research Home Page
+
+The `/` route is a polished Tailwind-based research microsite for Iri-Shield. It summarizes the seven-layer middleware pipeline, controlled evaluation results, API demo routes, Vercel storage guidance, and placeholder slots for future figures/videos.
+
+The home page and `Generate_Media.md` are mounted before `iri-shield` middleware so visitors can always read the project site. Demo API routes remain protected and monitored by `iri-shield`.
+
+Use `Generate_Media.md` as the brief for creating:
+
+- System architecture and seven-layer pipeline figures.
+- Attack sequence correlation timeline.
+- Dashboard screenshots.
+- Threat detection, false-positive, identity, redaction, throughput, and latency charts.
+- Product demo and research walkthrough videos.
 
 ## Deploy to Vercel
 
